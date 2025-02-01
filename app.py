@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,render_template
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 import requests
@@ -15,11 +15,11 @@ CORS(app)
 # Load summarization model
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
-UPLOAD_DOCUMENTS_FOLDER = os.path.join(os.getcwd(), 'documents')
-UPLOAD_VIDEOS_FOLDER = os.path.join(os.getcwd(), 'videos')
+UPLOAD_DOCUMENTS_FOLDER = os.path.join(os.getcwd(), '/statics/documents')
+# UPLOAD_VIDEOS_FOLDER = os.path.join(os.getcwd(), 'videos')
 
 os.makedirs(UPLOAD_DOCUMENTS_FOLDER, exist_ok=True)
-os.makedirs(UPLOAD_VIDEOS_FOLDER, exist_ok=True)
+# os.makedirs(UPLOAD_VIDEOS_FOLDER, exist_ok=True)
 
 # Allowed file extensions
 ALLOWED_DOCUMENT_EXTENSIONS = {'pdf', 'docx', 'txt'}
@@ -43,9 +43,9 @@ def upload_file():
     if source_type in ['docx', 'pdf', 'txt']:
         upload_folder = UPLOAD_DOCUMENTS_FOLDER
         allowed_extensions = ALLOWED_DOCUMENT_EXTENSIONS
-    elif source_type == 'video':
-        upload_folder = UPLOAD_VIDEOS_FOLDER
-        allowed_extensions = ALLOWED_VIDEO_EXTENSIONS
+    # elif source_type == 'video':
+    #     upload_folder = UPLOAD_VIDEOS_FOLDER
+    #     allowed_extensions = ALLOWED_VIDEO_EXTENSIONS
     else:
         return jsonify({"error": "Invalid source type"}), 400
 
@@ -157,6 +157,6 @@ def summarize():
         return jsonify({"error": str(e)}), 500
 @app.route('/')
 def home():
-    return "Content Summarizer API is running!"
+    return render_template('index.html')
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
