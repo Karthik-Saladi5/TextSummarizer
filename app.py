@@ -2,8 +2,6 @@ from flask import Flask, request, jsonify,render_template
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 import requests
-import speech_recognition as sr
-from pydub import AudioSegment
 from transformers import pipeline
 import PyPDF2  # Replacing pdfplumber with PyPDF2
 from docx import Document
@@ -16,14 +14,11 @@ CORS(app)
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 UPLOAD_DOCUMENTS_FOLDER = os.path.join(os.getcwd(), '/statics/documents')
-# UPLOAD_VIDEOS_FOLDER = os.path.join(os.getcwd(), 'videos')
 
 os.makedirs(UPLOAD_DOCUMENTS_FOLDER, exist_ok=True)
-# os.makedirs(UPLOAD_VIDEOS_FOLDER, exist_ok=True)
 
 # Allowed file extensions
 ALLOWED_DOCUMENT_EXTENSIONS = {'pdf', 'docx', 'txt'}
-ALLOWED_VIDEO_EXTENSIONS = {'mp4'}
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
@@ -43,9 +38,6 @@ def upload_file():
     if source_type in ['docx', 'pdf', 'txt']:
         upload_folder = UPLOAD_DOCUMENTS_FOLDER
         allowed_extensions = ALLOWED_DOCUMENT_EXTENSIONS
-    # elif source_type == 'video':
-    #     upload_folder = UPLOAD_VIDEOS_FOLDER
-    #     allowed_extensions = ALLOWED_VIDEO_EXTENSIONS
     else:
         return jsonify({"error": "Invalid source type"}), 400
 
@@ -72,25 +64,6 @@ def extract_web_content(url):
     
     return text
 
-# def transcribe_video(video_path):
-#     if not os.path.exists(video_path):
-#         raise FileNotFoundError(f"Video file not found: {video_path}")
-    
-#     audio_path = "temp_audio.wav"
-#     video = AudioSegment.from_file(video_path)
-#     video.export(audio_path, format="wav")
-    
-#     recognizer = sr.Recognizer()
-#     with sr.AudioFile(audio_path) as source:
-#         audio_data = recognizer.record(source)
-#         text = recognizer.recognize_google(audio_data)
-    
-#     os.remove(audio_path)
-    
-#     if not text.strip():
-#         raise ValueError("No speech detected in the video")
-    
-#     return text
 
 def read_document(file_path):
     if not os.path.exists(file_path):
@@ -144,8 +117,6 @@ def summarize():
         if source_type == 'web':
             text = extract_web_content(source)
             print(f"Extracted text length: {len(text)}")  # Log the length of the text
-        # elif source_type == 'video':
-        #     text = transcribe_video(source)
         elif source_type in ['docx', 'pdf', 'txt']:
             text = read_document(source)
         else:
