@@ -61,10 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("file", file);
         formData.append("type", sourceType.value);
 
-        const uploadResponse = await fetch("http://localhost:5000/upload", {
-          method: "POST",
-          body: formData,
-        });
+        const uploadResponse = await fetch(
+          "https://textsummarizer-rhaq.onrender.com/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (!uploadResponse.ok) {
           throw new Error("Failed to upload file");
@@ -75,16 +78,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Get summary
-      const summarizeResponse = await fetch("http://localhost:5000/summarize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: sourceType.value,
-          source: sourcePath,
-        }),
-      });
+      const summarizeResponse = await fetch(
+        "https://textsummarizer-rhaq.onrender.com/summarize",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: sourceType.value,
+            source: sourcePath,
+          }),
+        }
+      );
 
       if (!summarizeResponse.ok) {
         throw new Error("Failed to generate summary");
