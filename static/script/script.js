@@ -61,13 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("file", file);
         formData.append("type", sourceType.value);
 
-        const uploadResponse = await fetch(
-          "https://textsummarizer-rhaq.onrender.com/upload",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+        const uploadResponse = await fetch("http://localhost:5002/upload", {
+          method: "POST",
+          body: formData,
+        });
 
         if (!uploadResponse.ok) {
           throw new Error("Failed to upload file");
@@ -79,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Get summary
       const summarizeResponse = await fetch(
-        "https://textsummarizer-rhaq.onrender.com/summarize",
+        "http://localhost:5002/summarize",
         {
           method: "POST",
           headers: {
